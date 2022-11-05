@@ -1,0 +1,244 @@
+\documentclass{beamer}
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{minted}
+
+\usetheme{PaloAlto}
+
+\title{Priority Queue}
+\author{Frank Roger Salas Ticona}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Definición de Priority Queue}
+    Es una estructura de datos similar a las colas y pilas, donde los elementos llevan cierta prioridad asociada, el elemento con la mayor prioridad es el que es utilizado primero.
+    \begin{center}
+         \begin{tabular}{|c|c|c|}
+            \hline
+            Priority Queue &  & Queue\\
+            \hline
+            57 &  & 32 \\
+            \hline
+            32 &  & 12 \\
+            \hline
+            19 &  & 57 \\
+            \hline
+            12 &  & 19 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{¿Por qué una priority queue?}
+Las colas de prioridad son usadas ampliamente en diversos algoritmos tales como el algoritmo de Dijkstra, Huffman, best-first search, entre otros. Lo cual la hace una estructura de datos idónea para resolver distintos tipos de problemas.
+\end{frame}
+
+\begin{frame}
+\frametitle{¿Cómo es una priority queue?}
+Podemos ver a nuestro priority queue como un árbol binário de la siguiente manera:
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode] {90} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {50}
+                    child {node[roundnode] {30}}
+                    %child {node[roundnode] {30}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+Representación en vector:\\
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            90 & 80 & 50 & 10 & 40 & 30 \\
+            \hline
+            1 & 2 & 3 & 4 & 5 & 6\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Top}
+Lo principal de un priority queue es obtener el elemento con la mayor prioridad.
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode, fill=yellow!40] {90} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {50}
+                    child {node[roundnode] {30}}
+                    %child {node[roundnode] {30}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+Representación en vector:\\
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            90 & 80 & 50 & 10 & 40 & 30 \\
+            \hline
+            1 & 2 & 3 & 4 & 5 & 6\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Insersión de nuevo elemento}
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode] {90} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {50}
+                    child {node[roundnode] {30}}
+                    child {node[roundnode, fill=yellow!40] {60}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|c|}
+            \hline
+             90 & 80 & 50 & 10 & 40 & 30 & 60 \\
+            \hline
+             1 & 2 & 3 & 4 & 5 & 6 & 7\\
+            \hline
+        \end{tabular}
+    \end{center}
+Sin embargo, observamos que no cumple con las condiciones necesarias.
+\end{frame}
+
+\begin{frame}
+\frametitle{Insersión de nuevo elemento}
+Movemos a la posición adecuada: \\
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode] {90} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm, fill=yellow!40] {60}
+                    child {node[roundnode] {30}}
+                    child {node[roundnode] {50}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|c|}
+            \hline
+             90 & 80 & 60 & 10 & 40 & 30 & 50 \\
+            \hline
+             1 & 2 & 3 & 4 & 5 & 6 & 7\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pop o elminicación}
+En una priorirty queue se elimina el elemento con la mayor prioridad:
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode, fill=yellow!40] {90} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {60}
+                    child {node[roundnode] {30}}
+                    child {node[roundnode] {50}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|c|}
+            \hline
+             90 & 80 & 60 & 10 & 40 & 30 & 50 \\
+            \hline
+             1 & 2 & 3 & 4 & 5 & 6 & 7\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pop o elminicación}
+En una priorirty queue se elimina el elemento con la mayor prioridad:
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode, fill=yellow!40] {50} 
+                child {node[roundnode, xshift = -0.5cm] {80}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {60}
+                    child {node[roundnode] {30}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+             50 & 80 & 60 & 10 & 40 & 30 \\
+            \hline
+             1 & 2 & 3 & 4 & 5 & 6 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pop o elminicación}
+En una priorirty queue se elimina el elemento con la mayor prioridad:
+    \begin{center}
+        \begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, minimum size=4mm},
+]
+            \node[roundnode] {80} 
+                child {node[roundnode, xshift = -0.5cm, fill=yellow!40] {50}
+                    child {node[roundnode] {10}}
+                    child {node[roundnode] {40}}}
+                child {node[roundnode, xshift = 0.5cm] {60}
+                    child {node[roundnode] {30}}
+                    }
+        \end{tikzpicture}
+    \end{center}
+    \begin{center}
+         \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+             50 & 80 & 60 & 10 & 40 & 30 \\
+            \hline
+             1 & 2 & 3 & 4 & 5 & 6 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bibliográfia}
+\end{frame}
+
+\end{document} 
