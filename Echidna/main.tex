@@ -1,0 +1,68 @@
+\documentclass{beamer}
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{biblatex}
+\usetheme{PaloAlto}
+
+\addbibresource{biblio.bib}
+
+\title{Echidna Clustering}
+\author{Frank Roger Salas Ticona}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Clustering Mixed Data}
+Existen diversos algoritmos, para agrupar/clusterizar datos uniformes. Y es por ello que existe la necesidad de un algoritmo que nos permita clusterizar datos mixtos o no uniformes.\\
+Un ejemplo de datos mixtos, es el \textit{Tráfico en redes}. \\
+
+Tenemos tipos de datos tales como: \textit{SrcIP, DstIP, Protocol, SrcPort, DstPort, bytes}. Podemos observar, que existen tipos de datos jerárquicos como \textit{SrcIP, DstIP}, \textit{bytes} es cuantitativo y \textit{Protocol, SrcPort, DstPort} son de tipo nominal y categóricos.
+\end{frame}
+
+\begin{frame}
+\frametitle{Distance Functions}
+\begin{enumerate}
+    \item \textbf{Atributos cuantitativos}:
+        Son representados mediante escalares. Sus centroides en el cluster son dados por el promedio de N puntos. Calculamos la distancia entre clusteres usando la distancia Euclidiana.
+    \item \textbf{Atributos categóricos o cualitativos}: 
+        Un cluster con N puntos es representado por un histograma de frecuencias, de los atributos. De esta manera calculamos la distancia entre clusteres usando la distancia Euclidiana entre la frecuencia de cada atributo.
+    \item \textbf{Atributos jerárquicos}: Representado por un árbol. Cada nodo que no es una hoja es la generalización de nodos hoja en el subárbol en dicho nodo.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Distance Functions}
+    En un cluster C cuyo atributo jerárquico corresponde a la dirección IP, es representado por un prefijo $\bar{IP}/p$. Calculamos la distancia enter dos clusteres con centroides, $\bar{IP_{1}}/p$ y $\bar{IP_{2}}/p$.
+$$d_{h}(C_{1}, C_{2})=32 - p$$
+Si $p > 8$ o 24 si $p \leq 8$, $p = CommonPrefix(\bar{IP_{1}}/p / \bar{IP_{2}}/p)$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Radius Calculation}
+Para controlar la varianza de los datos en un cluster, necesitamos alguna medidad del \textit{radio} del cluster. Podemos calcularlo para los atributos cuantitativos y cualitativos, con las desviación de los atributos en el cluster.\\
+Para el caso de datos jerárquicos como los IPs, obtenemos \textit{MinIP} y \textit{MaxIP}. Obtenemos un rango tal que $C[i].range=(minIP, maxIP)$, medimos este \textit{radio} con la altura del sub árbol más pequeño en la generalización jerárquica. $$R_{h}=(32-CommonPrefix(minIP, maxIP) / 32)$$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Cluster formation}
+Echidna, es formado por un Árbol CF o CF-Tree \cite{mahmood2006echidna}.\\
+Cada cluster como en BIRCH es representado por un vector que contiene estadísticas suficientes para calcular el $centroide$ y $radio$. Cada dato X, comienza desde la raíz siguiendo el camino $P$ hasta un nodo hoja. Se inserta al cluster más cercano y se actualiza en radio. En caso el número de entradas haya alcanzado el tope máximo entonces, el nodo se divide, y hacer el proceso recursivo en hasta llegar al nodo raíz.
+\end{frame}
+
+\begin{frame}
+\frametitle{Complexity}    
+En un árbol balanceado por su altura, con un factor de \textit{branching} B y \textit{m} nodos, se harán $log_{B}m$ comparaciones que on requeridas al momento de realizar una insercion. 
+$$O(N * B(1 + log_{B}m))$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Bibliografía}
+\printbibliography
+\end{frame}
+\end{document} 
